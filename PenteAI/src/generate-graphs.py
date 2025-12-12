@@ -1,15 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# --- YOUR DATA IS USED HERE ---
 data = {
     'Depth': [1, 2, 3, 4],
     
-    # YOUR MEASURED ALPHA-BETA DATA
+   
     'AlphaBeta_Time_ms': [4.64, 19.52, 554.39, 454.37], 
     'AlphaBeta_Nodes': [32, 271, 9436, 6415],
     
-    # MINIMAX ESTIMATES (FOR COMPARISON)
     'Minimax_Time_ms_est': [10, 500, 30000, 1500000], 
     'Minimax_Nodes_est': [360, 129600, 46656000, 16796160000],
 }
@@ -20,13 +18,11 @@ df_minimax_time = np.array(data['Minimax_Time_ms_est'])
 df_ab_nodes = np.array(data['AlphaBeta_Nodes'])
 df_minimax_nodes = np.array(data['Minimax_Nodes_est'])
 
-# ----------------------------------------------------
-# GENERATE FIGURES
-# ----------------------------------------------------
+
 
 fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
-# --- Graph A: Execution Time Comparison (Section 6.2) ---
+
 axes[0].plot(df_depth, df_minimax_time, marker='o', label='Basic Minimax (Est.)', color='red', linestyle='--')
 axes[0].plot(df_depth, df_ab_time, marker='s', label='Alpha-Beta Pruning (Measured)', color='green', linewidth=2)
 axes[0].set_yscale('log')
@@ -37,7 +33,7 @@ axes[0].grid(True, which="both", ls="--", alpha=0.6)
 axes[0].legend()
 
 
-# --- Graph B: Nodes Expanded Comparison (Section 6.2/6.3) ---
+
 bar_width = 0.35
 index = np.arange(len(df_depth))
 
@@ -52,8 +48,7 @@ axes[1].set_xlabel('Depth')
 axes[1].legend()
 
 
-# --- Graph C: Empirical vs Theoretical Complexity (Section 6.3) ---
-# The best-case theory is visually tracked by the measured Alpha-Beta performance.
+
 axes[2].plot(df_depth, df_ab_nodes, marker='s', label='Empirical (Actual Nodes)', color='blue')
 axes[2].plot(df_depth, df_ab_nodes, linestyle=':', label='Theoretical $O(b^{d/2})$ tracking', color='black')
 

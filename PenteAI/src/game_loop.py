@@ -8,8 +8,11 @@ from render_board import BoardRenderer
 from render_pieces import PieceRenderer
 from render_panel import PanelRenderer
 from menu import Menu
-
 from performance_tracker import PerformanceTracker
+
+# --- COLOR CONSTANT (for text display) ---
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 
 class GameApp:
@@ -40,6 +43,16 @@ class GameApp:
 
         # --- NEW: Initialize the performance tracker ---
         self.ai_tracker = PerformanceTracker() 
+        
+        # --- NEW: AI METRICS STORAGE AND FONT ---
+        self.last_ai_time = 0.0
+        self.last_ai_nodes = 0
+        self.last_peak_memory = 0.0 # NEW: Store peak memory usage
+        self.ai_depth = 0 # Will store the current search depth
+        self.font_size = 18
+        # Use a system font (Consolas is often clean and available)
+        self.font = pygame.font.SysFont('Consolas', self.font_size, bold=True)
+        # ----------------------------------------
         
         self._init_graphics(self.themes[self.current_theme_idx])
         self.menu.update_theme_name(self.themes[self.current_theme_idx].name)
@@ -72,8 +85,12 @@ class GameApp:
                     self.game_mode = "AI"
                     self.player_color = action[1]
                     ai_color = 3 - self.player_color
+                    
+                    # Store selected depth for display purposes
+                    self.ai_depth = self.menu.selected_difficulty 
+                    
                     self.ai_player = PenteAI(
-                        self.config, ai_color, depth=self.menu.selected_difficulty
+                        self.config, ai_color, depth=self.ai_depth
                     )
                     self._start_game()
                 elif action == "NEXT_THEME":
@@ -136,14 +153,21 @@ class GameApp:
                     current_depth = self.ai_player.depth # Get the current difficulty/depth
                     self.ai_tracker.start_timer()
                     
-                    # NOTE: We assume get_best_move now accepts the tracker object
+                    # NOTE: get_best_move accepts the tracker object
                     move = self.ai_player.get_best_move(self.game, self.ai_tracker)
                     
-                    time_taken, nodes_explored = self.ai_tracker.stop_timer()
+                    # *** NEW: Capture the third return value (peak_memory) ***
+                    time_taken, nodes_explored, peak_memory = self.ai_tracker.stop_timer()
                     # --- END BENCHMARK ---
                     
+                    # --- UPDATE METRICS FOR GUI DISPLAY ---
+                    self.last_ai_time = time_taken
+                    self.last_ai_nodes = nodes_explored
+                    self.last_peak_memory = peak_memory # Store the memory value
+                    # ------------------------------------
+                    
                     # *** CRITICAL: LOG THE DATA FOR YOUR REPORT ***
-                    print(f"[AI Benchmark] Depth: {current_depth} | Time: {time_taken:.2f} ms | Nodes: {nodes_explored}")
+                    print(f"[AI Benchmark] Depth: {current_depth} | Time: {time_taken:.2f} ms | Nodes: {nodes_explored} | Peak Memory: {peak_memory:.2f} MB")
                     
                     if move:
                         self.game.make_move(move[0], move[1])
@@ -159,6 +183,37 @@ class GameApp:
             if self.game.make_move(row, col):
                 self.last_ai_move_time = pygame.time.get_ticks()
 
+    def _draw_ai_metrics(self):
+        """Renders the last AI move's performance metrics onto the game screen."""
+        if self.game_mode != "AI":
+            return
+            
+        # Define the starting position for the text in the panel area
+        x_start = self.config.BOARD_WIDTH + 20 
+        y_start = 250 # Adjust this Y position to fit your specific panel layout
+
+        text_lines = [
+            f"--- AI METRICS (D={self.ai_depth}) ---",
+            f"Time: {self.last_ai_time:.2f} ms",
+            f"Nodes: {self.last_ai_nodes:,}", # The :, adds comma separation
+            f"Memory: {self.last_peak_memory:.2f} MB", # Display Memory
+        ]
+        
+        y_pos = y_start
+        
+        # Determine text color based on the current theme's panel color
+        # FIX: Changed 'line_color' to 'panel_color' for better contrast checking
+        text_color = BLACK if self.panel_gfx.theme.line_color == WHITE else WHITE
+        
+        for line in text_lines:
+            # Render the text surface
+            text_surface = self.font.render(line, True, text_color)
+            
+            # Blit (draw) the surface onto the screen
+            self.screen.blit(text_surface, (x_start, y_pos))
+            y_pos += self.font_size + 2
+
+
     def _draw(self):
         if self.state == "MENU":
             self.menu.draw(self.screen)
@@ -173,7 +228,12 @@ class GameApp:
             r, c = self.hover_pos
             if self.game.board[r][c] == 0:
                 self.piece_gfx.draw_ghost(self.screen, r, c, self.game.turn)
+                
         self.panel_gfx.draw(self.screen, self.game)
+        
+        # --- CALL NEW DRAW FUNCTION ---
+        self._draw_ai_metrics() 
+        # ----------------------------
 
     def _shutdown(self):
         pygame.quit()
