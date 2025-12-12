@@ -1,0 +1,48 @@
+Pente AI Game Application
+1. Introduction
+Welcome to the Pente AI Game Application! This software allows you to play the classic strategy board game Pente, either against a friend (PVP) or against a challenging computer opponent powered by the Minimax algorithm with Alpha-Beta Pruning and heruristics Function.
+
+Pente is played on a 19x19 grid. The goal is to be the first player to achieve five stones in a row (horizontally, vertically, or diagonally) or to capture five pairs of your opponent's stones (ten total).
+
+2. Setup and Main Menu 
+When you first launch the application (python main.py), you will be presented with the main menu.
+2.1 Main Menu Options
+Option Play PVP , Play AI , Change Theme , Quit
+Function Starts a standard Player vs. Player game , Enters the AI difficulty selection submenu , Cycles through the available graphical themes (Wood, Sunset, Ocean Mist, etc.) , Closes the application
+Notes | Player 1 (Black) moves first , You choose your color (Black or White) , This changes the appearance of the board and pieces
+
+2.2 Selecting AI Difficulty
+When you choose "Play AI," you must select a difficulty level. This level directly corresponds to the search depth of the Alpha-Beta algorithm
+Difficulty |Search Depth |AI Behavior
+Easy       |Depth 1 or 2 |Fast, but prone to simple tactical errors."
+Medium     |Depth 3,     |Balanced search depth, challenging for casual players."
+Hard       |Depth 4,     |Deep, aggressive search requiring precise play."
+
+3. Gameplay Controls and Interface
+3.1 Making a Move
+ 
+ Control   |Action                                                         |Effect
+Mouse Hover| Move the mouse over an empty intersection.                    |A ghost piece appears, showing where your stone will land."
+Left Click |Click on an empty intersection where the ghost piece is shown. |Places your stone if the move is legal.
+
+3.2 Game States
+Win Conditions: The game ends immediately if a player achieves 5-in-a-row or captures 5 pairs (10 stones).
+
+Resign Button: A Resign button is located in the sidebar panel. Clicking this instantly ends the game, granting victory to the opponent.
+
+End-of-Game: If the game ends, the result is displayed in the sidebar. Click anywhere on the board to reset and return to the menu
+
+4. AI Performance Monitoring (Advanced Feature)
+When playing in "Player vs. AI" mode, the application displays a special metrics panel to track the AI's real-time performance. This feature is primarily for developers and students analyzing the algorithm's efficiency
+Metric | Display        |Description
+Time   |Time: 454.37 ms | The total execution time (in milliseconds) the AI took to calculate the move.
+Nodes  |"Nodes: 6,415"  |The total number of game states (nodes) the Alpha-Beta algorithm had to explore before finding the best move. This proves the efficiency of the pruning technique.
+Depth  |Depth: 4        |The current search horizon selected for the AI opponent.
+
+5. Troubleshooting and Tips
+Game Freeze:
+ If the AI is set to a high depth (4+) and the board is complex (mid-game), the game may pause for several seconds while the AI calculates the move. Do not close the window; the calculation will finish.
+
+Returning to Menu:
+ Press the ESC key at any time during gameplay to return to the main menu.
+

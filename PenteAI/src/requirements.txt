@@ -1,0 +1,12 @@
+ Core Game Execution & Graphics
+ 
+ library name :pygame  |Primary Purpose in Project|	Graphics, Input, and Game Loop | Detailed Function| The foundation of the GUI. Handles rendering the Pente board, drawing pieces, processing mouse clicks, and controlling the main game loop at 60 FPS.
+ library name :sys  |Primary Purpose in Project|	System Interaction | Detailed Function| Used primarily for cleanly handling system-level tasks, such as exiting the application (sys.exit()) when the user quits the Pygame window
+ library name : time |Primary Purpose in Project| Real-Time Control & Benchmarking	 | Detailed Function| Used for timing operations outside of the dedicated PerformanceTracker class (e.g., managing the initial AI delay before making a move).
+library name : os  |Primary Purpose in Project| File System Interaction	| Detailed Function| Used for interacting with the operating system, such as ensuring correct paths for loading assets (sounds, images) or potentially configuring environment variables.
+
+Scientific Analysis & Benchmarking
+
+library name : numpy |Primary Purpose in Project|	Numerical Computation | Detailed Function| Provides powerful, fast array structures (like matrices) used for efficient mathematical operations, especially when calculating and manipulating large datasets of nodes and time values for the analysis scripts.
+library name : matplotlib |Primary Purpose in Project|	Data Visualization | Detailed Function| The standard library for generating the required scientific plots. It was used to create the three crucial graphs: Execution Time Comparison, Nodes Explored Comparison, and Empirical vs. Theoretical Complexity.
+library name : pandas |Primary Purpose in Project|	Data Structuring and Manipulation | Detailed Function| Provides the highly efficient DataFrame structure. This was used to load, clean, organize, and calculate statistics (mean, worst-case, best-case) from the raw AI benchmark logs before passing the final data to matplotlib.

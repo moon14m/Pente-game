@@ -9,6 +9,8 @@ from render_pieces import PieceRenderer
 from render_panel import PanelRenderer
 from menu import Menu
 
+from performance_tracker import PerformanceTracker
+
 
 class GameApp:
     def __init__(self):
@@ -36,6 +38,9 @@ class GameApp:
         self.last_ai_move_time = 0
         self.ai_delay_ms = 500
 
+        # --- NEW: Initialize the performance tracker ---
+        self.ai_tracker = PerformanceTracker() 
+        
         self._init_graphics(self.themes[self.current_theme_idx])
         self.menu.update_theme_name(self.themes[self.current_theme_idx].name)
 
@@ -125,8 +130,21 @@ class GameApp:
         if self.state == "GAME" and not self.game.game_over and self.game_mode == "AI":
             if self.game.turn != self.player_color:
                 if pygame.time.get_ticks() - self.last_ai_move_time > self.ai_delay_ms:
-                    self._draw()
-                    move = self.ai_player.get_best_move(self.game)
+                    self._draw() # Redraw before the long calculation begins
+                    
+                    # --- START BENCHMARK ---
+                    current_depth = self.ai_player.depth # Get the current difficulty/depth
+                    self.ai_tracker.start_timer()
+                    
+                    # NOTE: We assume get_best_move now accepts the tracker object
+                    move = self.ai_player.get_best_move(self.game, self.ai_tracker)
+                    
+                    time_taken, nodes_explored = self.ai_tracker.stop_timer()
+                    # --- END BENCHMARK ---
+                    
+                    # *** CRITICAL: LOG THE DATA FOR YOUR REPORT ***
+                    print(f"[AI Benchmark] Depth: {current_depth} | Time: {time_taken:.2f} ms | Nodes: {nodes_explored}")
+                    
                     if move:
                         self.game.make_move(move[0], move[1])
                     self.last_ai_move_time = pygame.time.get_ticks()
