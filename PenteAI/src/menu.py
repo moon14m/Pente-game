@@ -24,7 +24,7 @@ class Menu:
         except Exception as e:
             print(f"Error loading menu background: {e}")
 
-        # ADJUSTED FONT SIZES
+       
         self.font_title = pygame.font.SysFont(self.config.FONT_NAME, 60, bold=True)
         self.font_btn = pygame.font.SysFont(self.config.FONT_NAME, 20, bold=True)
         self.font_small = pygame.font.SysFont(self.config.FONT_NAME, 18)

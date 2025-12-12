@@ -3,8 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 
-# Ensure plots are saved to the current directory
-# and use Agg backend for non-interactive environments
+
 plt.switch_backend('Agg')
 
 data = {
@@ -12,8 +11,7 @@ data = {
 
     'Minimax_Time_ms': [15, 850, 48000, 2500000], 
     'Minimax_Nodes':   [360, 129000, 46000000, 16000000000],
-    # Minimax memory is assumed to be the same as Alpha-Beta, as memory complexity 
-    # (maximum depth * state size) is identical for both algorithms.
+    
     'Minimax_Memory_MB': [2, 4, 15, 50], 
     
     
@@ -29,24 +27,24 @@ def generate_comparison_table(df):
     """Generates the main comparative table (for copy/pasting into the report)."""
     print("## 6.2.1 Quantitative Comparison Table ##")
     
-    # Create the full comparison DataFrame
+   
     comparison_df = pd.DataFrame({
         'Algorithm': ['Minimax (Est.)'] * len(df) + ['Alpha-Beta'] * len(df),
         'Depth': list(df['Depth']) * 2,
         'Avg Time (ms)': list(df['Minimax_Time_ms']) + list(df['AlphaBeta_Time_ms']),
         'Nodes Explored': list(df['Minimax_Nodes']) + list(df['AlphaBeta_Nodes']),
-        # Uses the common memory values for both
+        
         'Memory (MB)': list(df['Minimax_Memory_MB']) + list(df['AlphaBeta_Memory_MB']),
     })
     
-    # --- Full Comparison Table ---
+    
     print("\n--- FULL MINIMAX VS ALPHA-BETA COMPARISON TABLE (Raw) ---")
     print(comparison_df.to_string(index=False))
     
-    # Custom format function for Nodes Explored to include thousands separator
+    
     node_formatter = lambda x: f"{x:,.0f}" if isinstance(x, (int, float)) else x
     
-    # --- Alpha-Beta Scalability Table ---
+    
     alpha_beta_only = comparison_df[comparison_df['Algorithm'] == 'Alpha-Beta'].reset_index(drop=True)
     
     print("\n--- LATEX FORMAT (Alpha-Beta Scalability Table) ---")
@@ -59,7 +57,6 @@ def generate_comparison_table(df):
     )
     print(latex_output_ab)
     
-    # --- Full Latex Comparison Table ---
     print("\n--- LATEX FORMAT (Minimax vs. Alpha-Beta Comparison Table) ---")
     full_latex_output = comparison_df[['Algorithm', 'Depth', 'Avg Time (ms)', 'Nodes Explored', 'Memory (MB)']].to_latex(
         index=False, 
@@ -75,7 +72,7 @@ def plot_results(df):
     """Generates the three required comparative graphs."""
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
     
-    # Plot 1: Execution Time Comparison
+    
     axes[0].plot(df['Depth'], df['Minimax_Time_ms'], marker='o', label='Basic Minimax (Est.)', color='red', linestyle='--')
     axes[0].plot(df['Depth'], df['AlphaBeta_Time_ms'], marker='s', label='Alpha-Beta Pruning', color='green', linewidth=2)
     axes[0].set_yscale('log') # Log scale is vital
@@ -85,7 +82,7 @@ def plot_results(df):
     axes[0].grid(True, which="both", ls="-", alpha=0.5)
     axes[0].legend()
     
-    # Plot 2: Nodes Explored Comparison (Bar Chart)
+  
     bar_width = 0.35
     index = np.arange(len(df['Depth']))
     
@@ -99,11 +96,11 @@ def plot_results(df):
     axes[1].set_xlabel('Depth')
     axes[1].legend()
     
-    # Plot 3: Alpha-Beta Empirical vs Theoretical Complexity
+    
     b_star = 25 
     theoretical_y = [b_star**(d/2) for d in df['Depth']]
     
-    # Scale the theoretical curve to match the empirical data at depth 1 for alignment
+    
     scale_factor = df['AlphaBeta_Nodes'][0] / theoretical_y[0]
     theoretical_y = [y * scale_factor for y in theoretical_y]
 
@@ -116,7 +113,7 @@ def plot_results(df):
     axes[2].grid(True, which="both", ls="-", alpha=0.5)
     axes[2].legend()
     
-    # Save the combined figure
+    
     plt.tight_layout()
     plt.savefig('performance_comparison_plots.png')
 

@@ -15,7 +15,7 @@ class Config:
         self.sound_enabled = True
         self.sounds = {}
 
-        # FONT SETTING (Change this string to try other fonts)
+        
         self.FONT_NAME = "georgia"
 
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
